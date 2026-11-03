@@ -1,5 +1,7 @@
 # US-013: User Notifications
 
+> **Superseded / never built as described.** No email-sending code exists anywhere in this codebase (no Trigger Email extension, no SMTP/Nodemailer integration — confirmed by reading `functions/index.js` in full). The actual, implemented notification mechanism is **browser push notifications via Firebase Cloud Messaging (FCM)**, not email. See US-027 (Decision Notifications) for the accurate specification of what exists today.
+
 ## Description
 As a decision owner, I want to be notified when there are updates to my decisions (e.g., new arguments added), so that I can stay engaged and monitor the progress.
 

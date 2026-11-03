@@ -34,19 +34,17 @@
 17. **FAB Action**: Copies the decision link to clipboard (replaces current "Copy Link" button).
 
 ## Design Gaps
-- **Statistics view**: Icon shown but no design for what statistics page/modal contains.
-- **Final vote counts**: Current implementation shows vote counts (Yes: N, No: N) — not visible in Figma.
-- **Final voter name chips**: Currently shown under Yes/No buttons — not visible in Figma.
-- **Vote Balance / Argument Score**: Currently displayed as metrics — not in Figma.
-- **Notifications bell**: Currently on the page — not in Figma.
-- **Export as Image**: Currently a button — not in Figma.
-- **Close Decision button**: Currently inline — may move to FAB menu or archive context menu only.
+- **Statistics view**: Resolved — implemented, see US-036. The stats icon in `ElectionHero` is wired with a working `onClick` that opens `StatisticsModal` (no longer a static `aria-hidden` placeholder).
+- **Final vote counts**: Resolved — implemented, shown in `ElectionHero` (Yes: N, No: N) and in the Statistics modal (US-036).
+- **Final voter name chips**: Resolved — implemented, per the voter-chips mechanic described in US-004/US-008.
+- **Vote Balance / Argument Score**: Resolved — implemented as part of the Statistics modal metrics (US-036).
+- **Notifications bell**: Resolved — implemented, see US-027 (push notification opt-in toggle).
+- **Export as Image**: Resolved — implemented, see US-007.
+- **Close Decision button**: Resolved — implemented via an owner-only toolbar on the decision page, see US-006/US-035; also duplicated in the archive context menu (US-034).
 
 ## Technical Notes
-- Current component: `frontend/src/pages/Decision.jsx` (535 lines, heavy inline styles)
-- Affected components: `ArgumentList.jsx`, `ArgumentItem.jsx`, `AddArgumentForm.jsx`
-- New components needed: `ElectionHero.jsx`, `FloatingArgumentInput.jsx`, `FAB.jsx`, `StatementCard.jsx`
-- The floating input bar requires new state management to track active column (pro/con).
+- Current component set: `ElectionHero.jsx` (+ `ElectionHero.modes.js`), `StatementCard.jsx`, `ColumnHeader.jsx`, `FloatingArgumentInput.jsx`, and `FAB.jsx`, each with a co-located CSS Module, all composed inside `frontend/src/pages/Decision.jsx`.
+- The floating input bar tracks the active column (pro/con) in component state.
 
 ## Figma Reference
 - Node ID: `110:1458` (Empty state — "Choose pro or con") (Figma: "Pro oder Con waehlen")

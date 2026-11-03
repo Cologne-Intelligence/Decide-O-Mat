@@ -11,7 +11,9 @@
 
 ## Technical Notes
 - The URL ID should be the document ID from the database.
-- Frontend: Use `navigator.clipboard.writeText()` for the copy functionality.
+- Frontend: "Copy Link" copies BOTH an HTML and a plain-text clipboard representation simultaneously via the `ClipboardItem` API (`copyRichLink` in `frontend/src/utils/ClipboardUtils.js`) — HTML payload is `<a href="url">Title (by Creator)</a>`, plain-text payload is `Title (by Creator)\n<url>`, with all interpolated values HTML-escaped. Falls back to plain `navigator.clipboard.writeText(url)` if the rich clipboard write fails, and further falls back to the legacy `document.execCommand('copy')` if the Clipboard API itself is unavailable.
+- Sharing is also available via a QR code (see US-037) and via a floating action button (FAB) with a speed-dial menu offering "Copy Link" and "Show QR Code".
+- When end-to-end encryption is enabled, the copied URL must include the full hash fragment (`#key=...`) — the implementation copies `window.location.href`, not just a path/id.
 
 ## Implementation Plan
 - [IMP-002-Share-Decision](../plans/IMP-002-Share-Decision.md)

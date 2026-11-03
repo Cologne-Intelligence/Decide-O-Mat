@@ -14,9 +14,9 @@
 7. **No Banner**: The current red/green "Decision Closed: Approved/Rejected" banner is removed and replaced by the Election Results hero component.
 
 ## Design Gaps
-- **Final result communication**: The current implementation shows "Approved" / "Rejected" / "No Votes" prominently. The Figma design does not clearly communicate the final result. Decision: How to display the outcome?
-- **Vote counts**: Current Yes/No vote counts are not visible in the Figma Results design.
-- **Export as Image**: Currently available as a button — not shown in Figma.
+- **Final result communication**: Resolved — a computed label, "Approved" / "Rejected" / "NoVotes", is shown inside the ballot-icon hero variant. Per US-008's tie-break rule, `noVotes >= yesVotes AND totalVotes > 0` counts as "Rejected" (an exact tie is not a draw); "NoVotes" is shown only when nobody voted at all.
+- **Vote counts**: Resolved — visible via the Statistics modal (US-036), in addition to the Yes/No counts shown directly in the hero.
+- **Export as Image**: Resolved — implemented for the results view too, using the same mechanism as the voting page (US-007).
 
 ## Technical Notes
 - Currently the same `Decision.jsx` component handles both open and closed states via the `isClosed` flag.
