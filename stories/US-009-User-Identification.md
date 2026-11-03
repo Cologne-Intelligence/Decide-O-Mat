@@ -3,6 +3,8 @@
 ## Description
 As a user, I want to identify myself with a name so that my contributions (arguments and votes) can be recognized by others.
 
+**Note**: the actual identification mechanism implemented is substantially more sophisticated than originally scoped here — see US-021 (Anonymous Identity & One Vote Limit) and US-040 (Guest Identity Persistence, Naming & Reset) for the accurate, current specification of automatic anonymous sign-in, generated "Anonymous {Animal}" names, and UID-vs-name reconciliation logic. This story's remaining accurate points: author attribution on arguments via the `authorName` field ("Added by [Name]"), and an editable display name via the User Settings panel.
+
 ## Acceptance Criteria
 1.  **Name Prompt**: When a user first interacts (votes or adds argument), prompt them for a display name if not set.
 2.  **Persistence**: The name is saved locally (localStorage) and used for future sessions.

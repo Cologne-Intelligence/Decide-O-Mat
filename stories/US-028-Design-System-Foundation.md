@@ -13,12 +13,12 @@
 6. **No Visual Regression**: Existing functionality continues to work correctly after the token swap.
 
 ## Decisions Required
-- **Theming strategy**: Dark-only vs. dark+light toggle (Figma shows a toggle icon, suggesting both were intended).
-- **CSS architecture**: CSS Modules, Tailwind, global CSS with BEM, or CSS-in-JS.
+- **Resolved — Theming strategy**: Dark-only was chosen. No light/dark toggle exists or is planned, despite the toggle icon shown in Figma.
+- **Resolved — CSS architecture**: CSS Modules (co-located `.module.css` files per component) was chosen over Tailwind, global CSS with BEM, and CSS-in-JS — confirmed by the `*.module.css` files present alongside components such as `Header.jsx`, `Decision.jsx`, `ElectionHero.jsx`, `FloatingArgumentInput.jsx`, and `ContextMenu.jsx`.
 
 ## Technical Notes
 - Current tokens live in `frontend/src/index.css` `:root` block.
-- Current codebase uses heavy inline styles in JSX — these should be migrated to the chosen CSS approach as part of each component story.
+- Legacy custom-property names (`--color-primary`, `--color-background`, etc.) are remapped to the new dark-theme Figma token values inside `frontend/src/index.css`, so any remaining inline-styled legacy code still renders correctly without needing immediate migration.
 - The Figma design file key is `ac7nNE0NZCX5iJy25dxDkY`.
 
 ## Figma Reference
