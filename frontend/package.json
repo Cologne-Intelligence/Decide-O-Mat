@@ -19,7 +19,7 @@
     "@fontsource/alfa-slab-one": "^5.3.0",
     "@fontsource/open-sans": "^5.3.0",
     "@vitejs/plugin-react": "^6.3.0",
-    "dotenv": "^17.3.1",
+    "dotenv": "^18.0.10",
     "firebase": "^12.18.0",
     "firebase-functions": "^7.4.0",
     "html-to-image": "^1.11.13",
