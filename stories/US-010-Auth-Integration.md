@@ -13,6 +13,7 @@ As a user, I want to be able to sign in so that I can securely manage my identit
 -   Enable Authentication in Firebase Console (Google, Email/Password).
 -   Implement `AuthContext` in React to manage user state.
 -   Update UI to show Login/Logout buttons.
+-   The app automatically calls `signInAnonymously()` on first load whenever there is no existing Firebase session — there is no explicit "continue as guest" step; anonymous auth is the default, always-on identity layer that Google/Email sign-in upgrades from (via `linkWithPopup`/`linkWithCredential` when the user opts to link rather than create a fresh account — see USER_CONCEPTS.md).
 
 ## Implementation Plan
 - [IMP-010-Auth-Integration](../plans/IMP-010-Auth-Integration.md)

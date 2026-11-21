@@ -14,8 +14,10 @@ As a user, I want to export the decision results (question, pros, cons, net scor
 4.  **Performance**: The generation should happen client-side to avoid server costs and latency.
 
 ## Technical Notes
--   Use a library like `html2canvas` or `dom-to-image` to render the DOM to an image.
--   Ensure the layout looks good in the exported image (might need a specific hidden container for rendering).
+-   Implemented using the `html-to-image` library's `toPng()` function, rendering the DOM node that contains the hero + pro/con columns.
+-   Fixed solid background color `#050509` (the dark theme's bg-base token) is used regardless of the system/browser theme, with `pixelRatio: 2` for higher-resolution output.
+-   Downloaded filename follows the pattern `decision-{decisionId}.png`.
+-   Entirely client-side — no server/backend involvement.
 
 ## Implementation Plan
 - [IMP-007-Export-Results](../plans/IMP-007-Export-Results.md)

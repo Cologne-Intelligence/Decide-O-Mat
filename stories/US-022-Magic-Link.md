@@ -6,24 +6,29 @@
 ## Acceptance Criteria
 
 ### 1. Generate Magic Link
-- [ ] In the settings/footer, there is a "Transfer Identity" button.
-- [ ] Clicking it calls the backend to generate a **Custom Auth Token**.
-- [ ] The app displays a link: `.../magic?token=...`.
-- [ ] I can copy this link.
+- [x] In the User Settings panel, there is a "Transfer Identity" action.
+- [x] Clicking it calls the backend `generateMagicLink()` callable, which returns a Firebase **custom auth token** for the caller's entire current identity (not scoped to a single decision).
+- [x] The app bundles this token together with **all of the user's locally-stored end-to-end-encryption decision keys** into one link: `.../magic#token=...&keys=...`. The keys payload lets Device B decrypt every E2E-encrypted decision Device A already knew about, not just re-authenticate.
+- [x] I can copy this link.
 
 ### 2. Consume Magic Link
-- [ ] When I open this link on a new device (Device B), the app detects the `token` param.
-- [ ] The app calls `signInWithCustomToken()`.
-- [ ] Device B is now authenticated as the same UID.
-- [ ] Update `localStorage` Display Name if possible (or user just re-enters name, as encrypted data is on Device A - actually, we might want to sync the encrypted name to the server user profile eventually, but for now re-entry is acceptable for MVP).
+- [x] When I open this link on a new device (Device B), the app (`MagicHandler.jsx`) detects the `token`/`keys` hash params.
+- [x] The app calls `signInWithCustomToken(token)`.
+- [x] Device B is now authenticated as the same UID.
+- [x] If Device B is already signed in as a **different**, non-matching account, an explicit confirmation screen warns that continuing will switch the active identity (and its vote history/attribution), requiring Cancel/Confirm before the swap proceeds.
+- [x] Imported E2E keys are **merged** into local storage (not overwritten), preserving keys for decisions already known on that device.
+- [x] Display name is not re-entered manually — it travels implicitly via the shared Firebase identity (same UID), and encrypted per-decision names are recoverable once the matching key is imported.
 
 ### 3. Security
-- [ ] The link should ideally be short-lived or use a signature to prevent easy forgery (optional for MVP but recommended).
-- [ ] Warning displayed to user not to share this link publicly.
+- [x] The token/keys payload is carried in the URL **hash fragment**, not a query string, so it is never sent to the server or captured in referer headers/server logs.
+- [x] The token and keys are stripped from the visible address bar immediately via `history.replaceState` once consumed, so they don't linger in browser history.
+- [ ] The link is not short-lived or signature-restricted beyond Firebase's own custom-token expiry — no additional single-use/expiry enforcement was added.
+- [ ] No explicit in-app warning is shown telling the user not to share this link publicly (unresolved from original story).
 
 ## Technical Notes
-- Create a specific route `/magic` or handle globally in `App.jsx`.
-- Update `localStorage` upon successful processing.
+- Backend: callable `generateMagicLink()` in `functions/index.js`, calls `admin.auth().createCustomToken(uid)` for the caller's current uid.
+- Frontend: `frontend/src/components/MagicLinkData.jsx` builds the `/magic#token=...&keys=...` link, serializing `EncryptionService.getAllStoredKeys()` as base64url-encoded JSON for the `keys` param.
+- Route: `/magic`, handled by `frontend/src/pages/MagicHandler.jsx`.
 
 ## Implementation Plan
 - [IMP-022-Magic-Link](../plans/IMP-022-Magic-Link.md)

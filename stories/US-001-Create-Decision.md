@@ -13,8 +13,10 @@
 
 ## Technical Notes
 - Frontend: Simple form with one text input.
-- Backend: API endpoint `POST /decisions` that accepts `{ question: string }`.
-- Database: Create a new document in `decisions` collection with auto-generated ID.
+- Backend: there is no REST API in this app — only Firebase callable functions and two Firestore triggers. Creation goes through the callable function `createDecision({ question })`, implemented as a Cloud Function v2 in region `europe-west3` with Firebase App Check enforcement (enforced in production only, per `functions/config.js`). The function validates that `question` is a non-empty, trimmed string ≤1000 chars.
+- Database: Creates a `decisions/{id}` document with `{ question, createdAt: serverTimestamp(), ownerId: callerUid, participantIds: [callerUid] }`, and also creates a `decisions/{id}/participants/{uid}` document via an internal `ensureParticipant` helper.
+- The caller must be authenticated, but this is frictionless in practice because the app auto-signs-in every visitor anonymously on load (see US-021).
+- **Optional E2E encryption**: if `VITE_ENABLE_ENCRYPTION=true` (build-time flag — see US-020), an AES-GCM key is generated client-side and the question is encrypted before being sent to `createDecision`; the key is appended to the resulting redirect URL as `#key=...` and is never sent to the backend.
 
 ## Implementation Plan
 - [IMP-001-Create-Decision](../plans/IMP-001-Create-Decision.md)

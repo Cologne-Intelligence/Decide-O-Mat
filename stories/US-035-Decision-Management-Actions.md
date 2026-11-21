@@ -7,36 +7,30 @@
 ## Acceptance Criteria
 
 ### Edit Question
-1. **Trigger**: "Edit question" (Figma: "Frage bearbeiten") action from the archive context menu.
-2. **Inline Edit or Modal**: User can modify the question text (implementation TBD — no detailed design).
-3. **Encryption**: If the decision is E2E encrypted, the question must be re-encrypted with the stored key.
-4. **Authorization**: Only the decision owner can edit the question.
-5. **Real-time Update**: The updated question propagates to all subscribed clients.
+1. **Trigger**: "Edit question" (Figma: "Frage bearbeiten") action from the archive context menu, via `EditQuestionModal`.
+2. **Modal Edit**: User modifies the question text in a modal dialog, pre-filled with the current question.
+3. **Encryption**: If the decision is E2E encrypted, the question is re-encrypted client-side with the decision's stored key before saving.
+4. **Authorization**: Only the decision owner can edit the question (server-enforced).
+5. **Real-time Update**: The updated question propagates to all subscribed clients via the live Firestore listener.
+6. **Note**: Editing is **not blocked when the decision is closed** — a closed decision's question can still be edited, unlike arguments/votes which are blocked once closed (see Technical Notes).
 
 ### Delete Decision
-6. **Trigger**: "Delete decision" (Figma: "Entscheidung loeschen") action from the archive context menu.
-7. **Confirmation**: User must confirm the deletion (dialog or inline confirmation).
-8. **Cascade Delete**: All subcollections are deleted (arguments, votes, participants, finalVotes).
-9. **Authorization**: Only the decision owner can delete a decision.
-10. **Feedback**: Success/error toast notification after deletion.
+7. **Trigger**: "Delete decision" (Figma: "Entscheidung loeschen") action from the archive context menu, via `ConfirmDeleteDialog`.
+8. **Confirmation**: User must confirm the deletion in a dialog before it proceeds.
+9. **Cascade Delete**: All subcollections are deleted (arguments and each argument's votes, finalVotes, participants), then the decision document itself.
+10. **Authorization**: Only the decision owner can delete a decision (server-enforced).
+11. **Feedback**: Toast notification after deletion; client navigates away from the deleted decision.
 
 ### View Statistics
-11. **Trigger**: "View statistics" (Figma: "Statistik anzeigen") from context menu OR statistics icon in the Election hero.
-12. **Content**: TBD (no Figma design exists for the statistics view).
-13. **Possible Metrics**: Total votes, vote distribution, participation timeline, argument count, most-voted argument.
-
-## Design Gaps
-- **Edit question UI**: No modal or inline-edit design in Figma.
-- **Delete confirmation dialog**: No design in Figma.
-- **Statistics view**: Icon/trigger exists but no content design.
+12. **Trigger**: "View statistics" (Figma: "Statistik anzeigen") from context menu OR statistics icon in the Election hero.
+13. **Content**: See [US-036-Statistics-View](US-036-Statistics-View.md) for the full, implemented specification.
 
 ## Technical Notes
-- Requires new Cloud Functions:
-  - `updateDecisionQuestion(decisionId, newQuestion)` — owner-only
-  - `deleteDecision(decisionId)` — owner-only, cascade delete subcollections
-- Statistics could be computed client-side from existing data or require a new Cloud Function for aggregation.
-- Current backend (`functions/index.js`) has CRUD functions but no edit-question or delete-decision.
-- `functions/deleteUser.js` exists as a reference for cascade deletion patterns.
+- Implemented as Firebase callable functions in `functions/index.js`:
+  - `updateDecisionQuestion({decisionId, question})` — owner-only (`decision.ownerId === request.auth.uid`, else `permission-denied`); validates question length ≤1000 chars; does **not** check `decision.status`, so it remains callable on closed decisions (flagged as an inconsistency worth a deliberate decision when porting — argument edits and both voting functions explicitly block on `status === "closed"`, this one doesn't).
+  - `deleteDecision({decisionId})` — owner-only; cascading hard-delete of all `arguments` docs plus each argument's `votes` subcollection, all `finalVotes` docs, and all `participants` docs, then the decision document itself — all writes are batched in chunks of 490 to stay under Firestore's 500-writes-per-batch limit.
+- `functions/deleteUser.js` contains a related but distinct cascade/freeze pattern used for GDPR account deletion (see US-024) — it does not call `deleteDecision` directly, it has its own logic for deciding whether to cascade-delete or freeze a decision depending on whether the deleted user was the sole participant.
+- Frontend: `frontend/src/components/EditQuestionModal.jsx` (shared with argument editing, see [US-039-Edit-Argument](US-039-Edit-Argument.md)) and `frontend/src/components/ConfirmDeleteDialog.jsx`.
 
 ## Implementation Plan
-- [IMP-035-Decision-Management-Actions](../plans/IMP-035-Decision-Management-Actions.md)
+- [IMP-035-Decision-Management-Actions](../plans/IMP-035-Decision-Management-Actions.md) — implemented; both callable functions and all three frontend flows (edit, delete, statistics) are shipped.

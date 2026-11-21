@@ -39,11 +39,11 @@
 8. **Responsive**: Grid collapses to single column on smaller screens.
 
 ## Design Gaps
-- **Statistics view**: Referenced in context menus but no design for what it shows.
-- **Edit question flow**: No modal/inline-edit design shown.
-- **Delete confirmation**: No confirmation dialog design.
-- **Empty state**: No design for when the user has no decisions.
-- **Role indicator**: Current implementation shows Owner/Invitee badges — not in Figma.
+- **Statistics view**: Resolved — implemented (US-036), triggered from the "View statistics" context menu item.
+- **Edit question flow**: Resolved — implemented as a modal, `EditQuestionModal.jsx` (not inline editing).
+- **Delete confirmation**: Resolved — implemented as a dedicated `ConfirmDeleteDialog.jsx` component.
+- **Empty state**: Resolved — no dedicated empty-state design was implemented; `MyDecisions.jsx` simply renders a plain text message (`myDecisions.empty`) when the user has no decisions, with no illustration or call-to-action.
+- **Role indicator**: Resolved — not implemented. There is no Owner/Invitee badge in the shipped UI, and no decision-visibility/invite system exists in the codebase at all (see US-012, which is NOT IMPLEMENTED). The context menu itself differentiates owners implicitly: owners get extra items (Reopen/Close, Edit, Delete) appended after a divider; non-owners see only View, Copy Link, Show QR Code, and View Statistics. There isn't a separate "Running" vs. "Archived" menu item set as originally envisioned — the same item list is used for both, with only the Reopen/Close label toggling based on `decision.status`.
 
 ## Technical Notes
 - Current component: `frontend/src/pages/MyDecisions.jsx`
